@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Create a user obj from retrieved user
         User newUser = new User(newName, newDesc, 0, followStatus);
+        System.out.println(newUser.getUserFollowed());
 
         //Set User name
         TextView userName = (TextView)findViewById(R.id.userName);
@@ -41,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
         Button followBtn = findViewById(R.id.follow);
         Button messageBtn = findViewById(R.id.message);
 
+        //Check if user has been followed and change follow button
+        if (newUser.getUserFollowed()){
+            followBtn.setText("Unfollow");
+        }
+
+        UserDBHandler dbHandler = new UserDBHandler(this, null, null, 1);
+
         followBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -49,12 +57,15 @@ public class MainActivity extends AppCompatActivity {
                 if (!newUser.followed){
                     clickFollowBtn.setText("Unfollow");
                     newUser.followed = true;
+                    System.out.println(newUser.getUserFollowed());
                     Toast.makeText(getApplicationContext(), "Followed", Toast.LENGTH_SHORT).show();
+                    dbHandler.updateUser(newUser);
                 }
                 else{
                     clickFollowBtn.setText("Follow");
                     newUser.followed = false;
                     Toast.makeText(getApplicationContext(), "Unfollowed", Toast.LENGTH_SHORT).show();
+                    dbHandler.updateUser(newUser);
                 }
             }
 
@@ -70,7 +81,11 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-
     }
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, ListActivity.class));
+    }
+
 
 }
